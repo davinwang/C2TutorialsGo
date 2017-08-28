@@ -2,6 +2,8 @@ import sgf
 from go import GameState, BLACK, WHITE, EMPTY
 from datetime import datetime
 
+BOARD_POSITION = 'abcdefghijklmnopqrs'
+
 def WriteBackSGF(game_state, history, i):
     parser = sgf.Parser()
     collection = sgf.Collection(parser)
