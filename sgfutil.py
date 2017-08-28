@@ -1,4 +1,5 @@
 import sgf
+from go import GameState, BLACK, WHITE, EMPTY
 from datetime import datetime
 
 def WriteBackSGF(game_state, history, i):
