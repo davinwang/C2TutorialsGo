@@ -4,7 +4,7 @@ from datetime import datetime
 
 BOARD_POSITION = 'abcdefghijklmnopqrs'
 
-def WriteBackSGF(game_state, history, i):
+def WriteBackSGF(game_state, history, filename):
     parser = sgf.Parser()
     collection = sgf.Collection(parser)
     parser.start_gametree()
@@ -51,11 +51,8 @@ def WriteBackSGF(game_state, history, i):
     parser.end_gametree()
     
     # record the game in SGF
-    with open(os.path.join(os.path.expanduser('~'), 'python', 'tutorial_files','selfplay',
-                           '({}_{}_{})vs({}_{}_{})_{}_{}_{}.sgf'.format(
-                               BLACK_CONV_LEVEL, BLACK_FILTERS, BLACK_PRE_TRAINED_ITERS,
-                               WHITE_CONV_LEVEL, WHITE_FILTERS, WHITE_PRE_TRAINED_ITERS,
+    with open(os.path.join('{}_{}_{}.sgf'.format(
+							   filename,
                                winner,
-                               i,
                                datetime.now().strftime("%Y-%m-%d"))), "w") as f:
         collection.output(f)
