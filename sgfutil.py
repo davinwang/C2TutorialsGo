@@ -1,4 +1,4 @@
-import sgf
+import sgf, os
 from go import GameState, BLACK, WHITE, EMPTY
 from datetime import datetime
 
