@@ -1,9 +1,25 @@
 ﻿from caffe2.python import core, model_helper, brew, utils
 
-def AddConvModel(model, data, conv_level=13, filters=192):
+def AddInput(model, batch_size, db, db_type):
+    # Data is stored in INT8 while label is stored in UINT16
+    # This will save disk storage
+    data_int8, label_uint16 = model.TensorProtosDBInput(
+        [], ['data_int8', 'label_uint16'], batch_size=batch_size,
+        db=db, db_type=db_type)
+    # cast to float
+    data = model.Cast(data_int8, 'data', to=core.DataType.FLOAT)
+    # cast to int
+    label_int32 = model.Cast(label_uint16, 'label_int32', to=core.DataType.INT32)
+    label = model.FlattenToVec(label_int32, 'label')
+    # don't need the gradient for the backward pass
+    data = model.StopGradient(data, data)
+    label = model.StopGradient(label, label)
+    return data, label
+    
+def AddConvModel(model, data, conv_level=13, filters=192, dim_in=48):
     # Layer 1: 48 x 19 x 19 -pad-> 48 x 23 x 23 -conv-> 192 x 19 x 19
     pad1 = model.PadImage(data, 'pad1', pad_t=2, pad_l=2, pad_b=2, pad_r=2, mode="constant", value=0.)
-    conv1 = brew.conv(model, pad1, 'conv1', dim_in=48, dim_out=filters, kernel=5)
+    conv1 = brew.conv(model, pad1, 'conv1', dim_in=dim_in, dim_out=filters, kernel=5)
     relu1 = brew.relu(model, conv1, 'relu1')
     # Layer 2-12: 192 x 19 x 19 -pad-> 192 x 21 x 21 -conv-> 192 x 19 x 19
     if conv_level > 2:
