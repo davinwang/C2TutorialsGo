@@ -17,7 +17,7 @@ This is a tutorial written for Caffe2 which mocks google AlphaGo.
 | 4      | 1.6803 | 0.5275        |
 | 5      | 1.6567 | 0.5312        |
 | 6      | 1.6376 | 0.5340        |
-| 7      | ~1.6   | ~0.54 ongoing |
+| 7      | 1.6022 | 0.5398        |
 | 8      |        | tbd           |
 | 9      |        | tbd           |
 | 10     |        | tbd           |
@@ -29,7 +29,7 @@ This is a tutorial written for Caffe2 which mocks google AlphaGo.
   The program is runnable but still under evaluation. It also relies on RocAlphaGo project for Go rules by now. A new program is under construction to implement first 12 features in GPU mode to replace RocAlphaGo. It is believed to be at least 10x faster than RocAlphaGo(python implementation).  
   
 | Black Player <br> conv/filters/features/SL/RL | White Player <br> conv/filters/features/SL/RL | compete result <br> black : white |  
-|-------------------------------|-------------------------------|--------|
+|-----------------------------------|-------------------------------|--------|
 | **13 / 192 / 48 /  1 epoch /  0** | 13 / 192 / 48 /  1 epoch /  0 |  9 : 7 |
 | **13 / 192 / 48 /  4 epoch /  0** | 13 / 192 / 48 /  1 epoch /  0 |  9 : 7 |
 | 13 / 192 / 48 /  1 epoch /  0 | **13 / 192 / 48 /  4 epoch /  0** |  4 : 12 |
