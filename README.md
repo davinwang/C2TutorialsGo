@@ -31,12 +31,12 @@ This is a tutorial written for Caffe2 which mocks google AlphaGo.
 | Black Player <br> conv/filters/features/SL/RL | White Player <br> conv/filters/features/SL/RL | compete result <br> black : white |  
 |-------------------------------|-------------------------------|--------|
 | **13 / 192 / 48 /  1 epoch /  0** | 13 / 192 / 48 /  1 epoch /  0 |  9 : 7 |
-| 13 / 192 / 48 /  4 epoch /  0 | 13 / 192 / 48 /  1 epoch /  0 |  ? : ? |
-| 13 / 192 / 48 /  1 epoch /  0 | 13 / 192 / 48 /  4 epoch /  0 |  4 : 12 |
+| **13 / 192 / 48 /  4 epoch /  0** | 13 / 192 / 48 /  1 epoch /  0 |  9 : 7 |
+| 13 / 192 / 48 /  1 epoch /  0 | **13 / 192 / 48 /  4 epoch /  0** |  4 : 12 |
 | 13 / 192 / 48 /  4 epoch /  0 | 13 / 192 / 48 /  4 epoch /  0 |  ? : ? |
 | **13 / 192 / 48 /  6 epoch /  0** | 13 / 192 / 48 /  1 epoch /  0 |  13 : 3 |
 | 13 / 192 / 48 /  1 epoch /  0 | **13 / 192 / 48 /  6 epoch /  0** |  4 : 12 |
-| 13 / 192 / 48 /  6 epoch /  0 | 13 / 192 / 48 /  4 epoch /  0 |  7 : 9 |
+| 13 / 192 / 48 /  6 epoch /  0 | **13 / 192 / 48 /  4 epoch /  0** |  7 : 9 |
 | 13 / 192 / 48 /  4 epoch /  0 | 13 / 192 / 48 /  6 epoch /  0 |  8 : 8 |
 | 13 / 192 / 48 /  6 epoch /  0 | 13 / 192 / 48 /  6 epoch /  0 |  ? : ? |
   
