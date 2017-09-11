@@ -2,8 +2,8 @@
 This is a tutorial written for Caffe2 which mocks google AlphaGo.
 
 ## Preprocess
-This program relies on [RocAlphaGo](https://github.com/Rochester-NRT/RocAlphaGo) project for Go rules and feature plane generation.  
-Since it is implemented in python instead of C/C++, the preprocess takes around 500 CPU hours for complete KGS data set.
+The preprocess program relies on [RocAlphaGo](https://github.com/Rochester-NRT/RocAlphaGo) project for Go rules and feature plane generation.  
+The preprocess takes around 500 CPU hours in python implementation for complete KGS data set. By 2017-09-10, the program switched to `Cython` implementation of RocAlphaGo, it is estimated to take 50 CPU hours for preprocess complete KGS data set.
 
 ## Supervised Learning - Policy Network
 According to [DeepMind](http://www.nature.com/nature/journal/v529/n7587/full/nature16961.html?foxtrotcallback=true), AlphaGo (conv=13 filters=192) can achieve 55.4% test accuracy after 20 epochs training. Test set is the first 1 million steps. i.e. KGS2004. The speed of each prediction is 4.8ms (on Kepler GPU).  
@@ -13,7 +13,7 @@ This program (conv=13 filters=192) achieves 52.75% test accuracy by 4 epochs so 
 
 ## Reinforced Learning - Policy Network
 The program is runnable but still under evaluation. It also relies on RocAlphaGo project for Go rules by now.  
-A new program is under construction to implement first 12 features in GPU mode to replace RocAlphaGo. It is believed to be at least 10x faster than RocAlphaGo.
+A new program is under construction to implement first 12 features in GPU mode to replace RocAlphaGo. It is believed to be at least 10x faster than RocAlphaGo(python implementation).
 > The AI player trained 1 epochs(48% test accuracy) wins over the one trained 0.2 epochs(39% test accuracy) by 14:2  
 > The AI player trained 4 epochs(52.75% test accuracy) wins over the one trained 1 epochs by 13:3  
 > More result tbd.  
