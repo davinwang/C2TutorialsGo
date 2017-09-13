@@ -62,7 +62,7 @@ def AddGamePlay(model, data, predict):
   
   layer0, layer1, layer2, layer3, \
   layer4to9, layer10, layer11, layer12to19, \
-  layer20to35, layer36to43 layer44to47, layer48 = model.Split([data, SPLIT_SIZE], \
+  layer20to35, layer36to43, layer44to47, layer48 = model.Split([data, SPLIT_SIZE], \
                                                      ['layer0', 'layer1', 'layer2','layer3', \
                                                       'layer4to9', 'layer10', 'layer11', 'layer12to19', \
                                                       'layer20to35', 'layer36to43', 'layer44to47', 'layer48'], \
