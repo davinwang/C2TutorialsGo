@@ -103,4 +103,6 @@ ENV/
 ### nohup ###
 nohup.out
 
+### RocAlphaGo Cython ###
+/RocAlphaGo/*.c
 
