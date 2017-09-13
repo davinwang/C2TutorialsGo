@@ -15,7 +15,7 @@ def InitGame(model, mini_batch=64):
       | Ladder escape   | 1           | Whether a move at this point is a successful ladder escape
       | Sensibleness    | 1           | Whether a move is legal and does not fill its own eyes
       | Zeros           | 1           | A constant plane filled with 0
-      | Player color    | 1           | Whether current player is black
+      | Player color    | 1           | Whether current player is black (only for Value Network)
   '''
   ZERO = np.zeros((mini_batch,1,19,19), dtype=np.float32)
   ONE = np.ones((mini_batch,1,19,19), dtype=np.float32)
@@ -52,7 +52,7 @@ def AddGamePlay(model, data, predict):
       Output: data with shape (N, C, H, W)
   '''
   BOARD_SIZE = model.ConstantFill([], 'board_size', shape=[1,], value=361) # constant
-  SPLIT_SIZE = model.GivenTensorIntFill([], 'split_size', shape=[12,], values=np.array([1,1,1,1,6,1,1,8,16,8,4,1])) # constant
+  SPLIT_SIZE = model.GivenTensorIntFill([], 'split_size', shape=[11,], values=np.array([1,1,1,1,6,1,1,8,16,8,4])) # constant
   
   _topk, topk_indices = model.TopK(predict, ['_topk', 'topk_indices'], k=1) #shape=(mini_batch,1)
   label = model.FlattenToVec([topk_indices], ['label']) # shape=(mini_batch,)
@@ -62,10 +62,10 @@ def AddGamePlay(model, data, predict):
   
   layer0, layer1, layer2, layer3, \
   layer4to9, layer10, layer11, layer12to19, \
-  layer20to35, layer36to43, layer44to47, layer48 = model.Split([data, SPLIT_SIZE], \
+  layer20to35, layer36to43, layer44to47 = model.Split([data, SPLIT_SIZE], \
                                                      ['layer0', 'layer1', 'layer2','layer3', \
                                                       'layer4to9', 'layer10', 'layer11', 'layer12to19', \
-                                                      'layer20to35', 'layer36to43', 'layer44to47', 'layer48'], \
+                                                      'layer20to35', 'layer36to43', 'layer44to47'], \
                                                      axis=1)
   ###
   layer0n = layer1 # player of this turn = opponent of last turn
@@ -77,18 +77,18 @@ def AddGamePlay(model, data, predict):
   layer5to10n = layer4to9
   layer11n = model.Add([layer10, layer11], 'layer11n')
   # liberties = liberties after move of last move
-  layer12to19n = layer36to43n
+  layer12to19n = layer36to43
   # TBD
   layer20to35n = layer20to35
   # liberties after move (TBD)
-  layer36to43n = model.Sub([layer36to43, onehot], 'layer36to43n')
+  layer36to43n = layer36to43
   # TBD
   layer44to47n = layer44to47
-  layer48n = model.Negative(layer48)
+  #layer48n = model.Negative(layer48)
   ###
   data = model.Concat([layer0n, layer1n, layer2n, layer3n, \
                        layer4n, layer5to10n, layer11n, layer12to19n, \
-                       layer20to35n, layer36to43n, layer44to47n, layer48n], ['data','_dim'], axis=1)
+                       layer20to35n, layer36to43n, layer44to47n], ['data','_dim'], axis=1)
   return data
 
 #def Symmetric(model, predict):
