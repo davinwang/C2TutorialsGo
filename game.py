@@ -2,11 +2,20 @@ import numpy as np
 
 def InitGame(model, mini_batch=64):
   '''
-      Feature      | No. of planes | Description
-      Stone colour | 3             | Player stone / opponent stone / empty
-      Ones         | 1             | A constant plane filled with 1
-      Turns since  | 8             | How many turns since a move was played
-      Player color | 1             | Whether current player is black
+      | Feature         | # of planes | Description
+      |-----------------|-------------|-------------------------
+      | Stone colour    | 3           | Player stone / opponent stone / empty
+      | Ones            | 1           | A constant plane filled with 1
+      | Turns since     | 8           | How many turns since a move was played
+      | Liberties       | 8           | Number of liberties (empty adjacent points)
+      | Capture size    | 8           | How many opponent stones would be captured
+      | Self-atari size | 8           | How many of own stones would be captured
+      | Liberties after move | 8      | Number of liberties after this move is played
+      | Ladder capture  | 1           | Whether a move at this point is a successful ladder capture
+      | Ladder escape   | 1           | Whether a move at this point is a successful ladder escape
+      | Sensibleness    | 1           | Whether a move is legal and does not fill its own eyes
+      | Zeros           | 1           | A constant plane filled with 0
+      | Player color    | 1           | Whether current player is black
   '''
   ZERO = np.zeros((mini_batch,1,19,19), dtype=np.float32)
   ONE = np.ones((mini_batch,1,19,19), dtype=np.float32)
@@ -43,7 +52,7 @@ def AddGamePlay(model, data, predict):
       Output: data with shape (N, C, H, W)
   '''
   BOARD_SIZE = model.ConstantFill([], 'board_size', shape=[1,], value=361) # constant
-  SPLIT_SIZE = model.GivenTensorIntFill([], 'split_size', shape=[8,], values=np.array([1,1,1,1,6,1,1,1])) # constant
+  SPLIT_SIZE = model.GivenTensorIntFill([], 'split_size', shape=[12,], values=np.array([1,1,1,1,6,1,1,8,16,8,4,1])) # constant
   
   _topk, topk_indices = model.TopK(predict, ['_topk', 'topk_indices'], k=1) #shape=(mini_batch,1)
   label = model.FlattenToVec([topk_indices], ['label']) # shape=(mini_batch,)
@@ -52,9 +61,11 @@ def AddGamePlay(model, data, predict):
   onehot, _shape = model.Reshape(['onehot2d'], ['onehot', '_shape'], shape=(0,1,19,19)) #shape=(mini_batch,1,19,19)
   
   layer0, layer1, layer2, layer3, \
-  layer4to9, layer10, layer11, layer48 = model.Split([data, SPLIT_SIZE], \
+  layer4to9, layer10, layer11, layer12to19, \
+  layer20to35, layer36to43 layer44to47, layer48 = model.Split([data, SPLIT_SIZE], \
                                                      ['layer0', 'layer1', 'layer2','layer3', \
-                                                      'layer4to9', 'layer10', 'layer11','layer48'], \
+                                                      'layer4to9', 'layer10', 'layer11', 'layer12to19', \
+                                                      'layer20to35', 'layer36to43', 'layer44to47', 'layer48'], \
                                                      axis=1)
   ###
   layer0n = layer1 # player of this turn = opponent of last turn
@@ -65,11 +76,19 @@ def AddGamePlay(model, data, predict):
   layer4n = onehot # 1 turns since last move
   layer5to10n = layer4to9
   layer11n = model.Add([layer10, layer11], 'layer11n')
-  #
+  # liberties = liberties after move of last move
+  layer12to19n = layer36to43n
+  # TBD
+  layer20to35n = layer20to35
+  # liberties after move (TBD)
+  layer36to43n = model.Sub([layer36to43, onehot], 'layer36to43n')
+  # TBD
+  layer44to47n = layer44to47
   layer48n = model.Negative(layer48)
   ###
   data = model.Concat([layer0n, layer1n, layer2n, layer3n, \
-                       layer4n, layer5to10n, layer11n, layer48n], ['data','_dim'], axis=1)
+                       layer4n, layer5to10n, layer11n, layer12to19n, \
+                       layer20to35n, layer36to43n, layer44to47n, layer48n], ['data','_dim'], axis=1)
   return data
 
 #def Symmetric(model, predict):
