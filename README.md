@@ -18,7 +18,7 @@ This is a tutorial written for Caffe2 which mocks google AlphaGo.
 | 5      | 1.6567 | 0.5312        | 15     |        | tbd           |
 | 6      | 1.6376 | 0.5340        | 16     |        | tbd           |
 | 7      | 1.6022 | 0.5398        | 17     |        | tbd           |
-| 8      |        | tbd           | 18     |        | tbd           |
+| 8      | 1.5944 | 0.5406        | 18     |        | tbd           |
 | 9      |        | tbd           | 19     |        | tbd           |
 | 10     |        | tbd           | 20     |        | 0.554(alphago)|
 
