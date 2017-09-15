@@ -99,13 +99,13 @@ def AddAccuracy(model, predict, label):
     accuracy = brew.accuracy(model, [predict, label], "accuracy")
     return accuracy
 	
-def AddTrainingOperators(model, softmax, label, base_lr=-0.003):
+def AddTrainingOperators(model, predict, label, base_lr=-0.003):
     """Adds training operators to the model."""
-    xent = model.LabelCrossEntropy([softmax, label], 'xent')
+    xent = model.LabelCrossEntropy([predict, label], 'xent')
     # compute the expected loss
     loss = model.AveragedLoss(xent, "loss")
     # track the accuracy of the model
-    # AddAccuracy(model, softmax, label)
+    AddAccuracy(model, predict, label)
     # use the average loss we just computed to add gradient operators to the model
     model.AddGradientOperators([loss])
     # do a simple stochastic gradient descent
