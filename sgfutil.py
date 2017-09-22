@@ -2,6 +2,9 @@ import sgf, os
 from go import GameState, BLACK, WHITE, EMPTY
 from datetime import datetime
 
+# BOARD_POSITION contains SGF symbol which represents each row (or column) of the board
+# It can be used to convert between 0,1,2,3... and a,b,c,d...
+# Symbol [tt] or [] represents PASS in SGF, therefore is omitted
 BOARD_POSITION = 'abcdefghijklmnopqrs'
 
 def GetWinner(game_state):
