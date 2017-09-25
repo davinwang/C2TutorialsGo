@@ -98,8 +98,8 @@ def AddAccuracy(model, predict, label):
     """Adds an accuracy op to the model"""
     accuracy = brew.accuracy(model, [predict, label], "accuracy")
     return accuracy
-	
-def AddTrainingOperators(model, predict, label, base_lr=-0.003):
+
+def AddTrainingOperators(model, predict, label, base_lr=-0.003, learn_neg=False):
     """Adds training operators to the model."""
     xent = model.LabelCrossEntropy([predict, label], 'xent')
     # compute the expected loss
@@ -111,8 +111,12 @@ def AddTrainingOperators(model, predict, label, base_lr=-0.003):
     # do a simple stochastic gradient descent
     ITER = brew.iter(model, "iter")
     # set the learning rate schedule
-    LR = model.LearningRate(
-        ITER, "LR", base_lr=base_lr, policy="fixed", stepsize=1, gamma=0.999 ) # when policy=fixed, stepsize and gamma are ignored
+    if learn_neg:
+        LR = model.LearningRate(
+            ITER, "LR_Neg", base_lr=-base_lr, policy="fixed") # when policy=fixed, stepsize and gamma are ignored
+    else:
+        LR = model.LearningRate(
+            ITER, "LR", base_lr=base_lr, policy="fixed") # when policy=fixed, stepsize and gamma are ignored
     # ONE is a constant value that is used in the gradient update. We only need
     # to create it once, so it is explicitly placed in param_init_net.
     ONE = model.param_init_net.ConstantFill([], "ONE", shape=[1], value=1.0)
@@ -123,7 +127,7 @@ def AddTrainingOperators(model, predict, label, base_lr=-0.003):
         param_grad = model.param_to_grad[param]
         # The update is a simple weighted sum: param = param + param_grad * LR
         model.WeightedSum([param, ONE, param_grad, LR], param)
-		
+
 def AddBookkeepingOperators(model):
     """This adds a few bookkeeping operators that we can inspect later.
     These operators do not affect the training procedure: they only collect

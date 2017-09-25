@@ -1,5 +1,4 @@
-# coding=UTF-8
-import numpy as np
+﻿import numpy as np
 PASS = -1
 EMPTY = 2
 WHITE = 3
