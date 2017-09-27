@@ -3,7 +3,7 @@ This is a tutorial written for Caffe2 which mocks google AlphaGo.
 
 ## Preprocess
   The Go game dataset are usually stored in [SGF](http://www.red-bean.com/sgf/go.html) file format. We need to transform SGF file into Caffe2 Tensor which are 48 feature planes of 19x19 size, according to [DeepMind](http://www.nature.com/nature/journal/v529/n7587/full/nature16961.html?foxtrotcallback=true).  
-    The preprocess program relies on `Cython` implementation of [RocAlphaGo](https://github.com/Rochester-NRT/RocAlphaGo) project for Go rules and feature plane generation. It is estimated to take 60 CPU hours for preprocess complete KGS data set.
+    [The preprocess program](http://nbviewer.jupyter.org/github/davinwang/C2TutorialsGo/blob/master/Mock%20AlphaGo%20%281%29%20Preprocess%20Pipeline.ipynb) relies on `Cython` implementation of [RocAlphaGo](https://github.com/Rochester-NRT/RocAlphaGo) project for Go rules and feature plane generation. It is estimated to take 60 CPU hours for preprocess complete KGS data set.
 
 ## Supervised Learning - Policy Network
   According to [DeepMind](http://www.nature.com/nature/journal/v529/n7587/full/nature16961.html?foxtrotcallback=true), AlphaGo can achieve 55.4% test accuracy after 20 epochs training. Test set is the first 1 million steps. i.e. KGS2004. The speed of each prediction is 4.8ms (on Kepler K40 GPU).  
@@ -25,7 +25,7 @@ This is a tutorial written for Caffe2 which mocks google AlphaGo.
 > Intel Broadwell CPU can provide around 30 GFlops compute power per core. Nvidia Kepler K40 and Maxwell GTX980m GPU can provide around 3 TFlops compute power.  
 
 ## Reinforced Learning - Policy Network
-  The program is runnable but still under evaluation. It also relies on RocAlphaGo project for Go rules by now. A new program is under construction to implement first 12 features in GPU mode to replace RocAlphaGo. It is believed to be at least 10x faster than RocAlphaGo(python implementation).  
+  [The RL program](http://nbviewer.jupyter.org/github/davinwang/C2TutorialsGo/blob/master/Mock%20AlphaGo%20%283B%29%20Policy%20Network%20-%20Reinforced%20Learning%20in%20mass%20production.ipynb) is runnable now but still under evaluation. It also relies on RocAlphaGo project for Go rules by now. A new program is under construction to implement first 12 features in GPU mode to replace RocAlphaGo. It is believed to be at least 10x faster than RocAlphaGo(python implementation).  
   
 ## Supervised Learning - Value Network
 tbd. Depends on Reinforced Learning to generate 30 millions games. And pick 1 state of each game.
