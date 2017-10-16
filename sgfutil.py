@@ -48,7 +48,7 @@ def WriteBackSGF(winner, history, filename, PB=None, PW=None, Komi='7.5'):
     for step in history:
         parser.start_node()
         parser.start_property(step[0]) # or W
-        parser.add_prop_value(BOARD_POSITION[step[1]]+BOARD_POSITION[step[2]])
+        parser.add_prop_value(BOARD_POSITION[step[1]/19]+BOARD_POSITION[step[1]%19])
         parser.end_property()
         parser.end_node()
     # end of game

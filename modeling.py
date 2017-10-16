@@ -99,7 +99,7 @@ def AddAccuracy(model, predict, label):
     accuracy = brew.accuracy(model, [predict, label], "accuracy")
     return accuracy
 
-def AddTrainingOperators(model, predict, label, base_lr=-0.003, learn_neg=False):
+def AddTrainingOperators(model, predict, label, base_lr=-0.003):
     """Adds training operators to the model."""
     xent = model.LabelCrossEntropy([predict, label], 'xent')
     # compute the expected loss
@@ -111,12 +111,7 @@ def AddTrainingOperators(model, predict, label, base_lr=-0.003, learn_neg=False)
     # do a simple stochastic gradient descent
     ITER = brew.iter(model, "iter")
     # set the learning rate schedule
-    if learn_neg:
-        LR = model.LearningRate(
-            ITER, "LR_Neg", base_lr=-base_lr, policy="fixed") # when policy=fixed, stepsize and gamma are ignored
-    else:
-        LR = model.LearningRate(
-            ITER, "LR", base_lr=base_lr, policy="fixed") # when policy=fixed, stepsize and gamma are ignored
+    LR = model.LearningRate(ITER, "LR", base_lr=base_lr, policy="fixed") # when policy=fixed, stepsize and gamma are ignored
     # ONE is a constant value that is used in the gradient update. We only need
     # to create it once, so it is explicitly placed in param_init_net.
     ONE = model.param_init_net.ConstantFill([], "ONE", shape=[1], value=1.0)
