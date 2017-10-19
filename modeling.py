@@ -94,6 +94,33 @@ def AddConvModel(model, data, conv_level=13, filters=192, dim_in=48):
     predict = model.Flatten(softmax, 'predict')
     return predict
 
+def AddResNetModel(model, data, num_blocks=19, filters=256, dim_in=17):
+    # Layer 1: 17 x 19 x 19 -conv-> 256 x 19 x 19
+    #pad1 = model.PadImage(data, 'pad1', pad_t=2, pad_l=2, pad_b=2, pad_r=2, mode="constant", value=0.)
+    conv1 = brew.conv(model, data, 'conv1', dim_in=dim_in, dim_out=filters, kernel=3)
+    norm1 = model.Normalize(conv1, 'norm1')
+    res_in = brew.relu(model, norm1, 'relu1')
+    # Blocks: 256 x 19 x 19 -conv-> -normalize-> -relu-> -conv-> -normalize-> +INPUT -relu->
+    def AddResBlock(model, input, i, filters=256, scope='res'):
+        #pad2 = model.PadImage(relu1, 'pad2', pad_t=1, pad_l=1, pad_b=1, pad_r=1, mode="constant", value=0.)
+        conv1 = brew.conv(model, input, 'res/{}/conv1'.format(i), dim_in=filters, dim_out=filters, kernel=3)
+        norm1 = model.Normalize(conv1, 'res/{}/norm1'.format(i))
+        relu1 = brew.relu(model, norm1, 'res/{}/relu1'.format(i))
+        conv2 = brew.conv(model, relu1, 'res/{}/conv2'.format(i), dim_in=filters, dim_out=filters, kernel=3)
+        norm2 = model.Normalize(conv2, 'res/{}/norm2'.format(i))
+        res = model.Add([norm2, input], 'res/{}/res'.format(i))
+        output = brew.relu(model, res, 'res/{}/relu2'.format(i))
+        return output
+    for i in range(num_blocks):
+        res_out = AddResBlock(model, res_in, i, filters)
+        res_in = res_out
+    # 2 layers of Policy head
+    
+    # 3 layers of Value head
+    
+    predict = res_out
+    return predict
+
 def AddAccuracy(model, predict, label):
     """Adds an accuracy op to the model"""
     accuracy = brew.accuracy(model, [predict, label], "accuracy")
