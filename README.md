@@ -1,5 +1,5 @@
 # C2TutorialsGo
-This is a tutorial written for Caffe2 which mocks google AlphaGo.
+This is a tutorial written for Caffe2 which mocks google AlphaGo Fan and AlphaGO Zero.
 
 ## Preprocess
   The Go game dataset are usually stored in [SGF](http://www.red-bean.com/sgf/go.html) file format. We need to transform SGF file into Caffe2 Tensor which are 48 feature planes of 19x19 size, according to [DeepMind](http://www.nature.com/nature/journal/v529/n7587/full/nature16961.html?foxtrotcallback=true).  
