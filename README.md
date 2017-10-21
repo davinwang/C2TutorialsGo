@@ -7,20 +7,20 @@ This is a tutorial written for Caffe2 which mocks google AlphaGo Fan and AlphaGO
 
 ## Supervised Learning - Policy Network
   According to [DeepMind](http://www.nature.com/nature/journal/v529/n7587/full/nature16961.html?foxtrotcallback=true), AlphaGo can achieve 55.4% test accuracy after 20 epochs training. Test set is the first 1 million steps. i.e. KGS2004. The speed of each prediction is 4.8ms (on Kepler K40 GPU).  
-  [This program](http://nbviewer.jupyter.org/github/davinwang/C2TutorialsGo/blob/master/Mock%20AlphaGo%20%282%29%20Policy%20Network.ipynb) achieves ~54.6% by 9 epochs so far. Test set is the latest 300K steps. i.e. KGS201705-201706. It also achieved speed of around 4.5ms for each single prediction (on Maxwell GTX980m GPU). Therefore each epochs takes ~40 GPU hours. Running on GPU mode is around 100x faster than CPU mode.  
+  [This program](http://nbviewer.jupyter.org/github/davinwang/C2TutorialsGo/blob/master/Mock%20AlphaGo%20%282%29%20Policy%20Network.ipynb) achieves ~54.6% by ? epochs so far. Test set is the latest 1 million steps. i.e. KGS201705-201709. It also achieved speed of around 4.5ms for each single prediction (on Maxwell GTX980m GPU). Therefore each epochs takes ~40 GPU hours. Running on GPU mode is around 100x faster than CPU mode.  
   
-| epochs | loss   | test accuracy | epochs | loss   | test accuracy |
-|--------|--------|---------------|--------|--------|---------------|
-| 1      | 1.895  | 0.4800        | 11     |        | tbd           |
-| 2      | 1.7782 | 0.5118        | 12     |        | tbd           |
-| 3      | 1.7110 | 0.5227        | 13     |        | tbd           |
-| 4      | 1.6803 | 0.5275        | 14     |        | tbd           |
-| 5      | 1.6567 | 0.5312        | 15     |        | tbd           |
-| 6      | 1.6376 | 0.5340        | 16     |        | tbd           |
-| 7      | 1.6022 | 0.5398        | 17     |        | tbd           |
-| 8      | 1.5944 | 0.5406        | 18     |        | tbd           |
-| 9      |        | tbd           | 19     |        | tbd           |
-| 10     |        | tbd           | 20     |        | 0.554(alphago)|
+| epochs | LR     | loss   | test accuracy | epochs | LR     | loss   | test accuracy |
+|--------|--------|--------|---------------|--------|--------|--------|---------------|
+| 1      | 0.003  | 1.895  | 0.4800        | 11     |        |        | tbd           |
+| 2      | 0.003  | 1.7782 | 0.5118        | 12     |        |        | tbd           |
+| 3      | 0.002  | 1.7110 | 0.5227        | 13     |        |        | tbd           |
+| 4      | 0.002  | 1.6803 | 0.5275        | 14     |        |        | tbd           |
+| 5      | 0.002  | 1.6567 | 0.5312        | 15     |        |        | tbd           |
+| 6      | 0.002  | 1.6376 | 0.5340        | 16     |        |        | tbd           |
+| 7      | 0.001  | 1.6022 | 0.5398        | 17     |        |        | tbd           |
+| 8      | 0.0005 | redo   | redo          | 18     |        |        | tbd           |
+| 9      |        |        | tbd           | 19     |        |        | tbd           |
+| 10     |        |        | tbd           | 20     |        |        | 0.554(alphago)|
 
 > Intel Broadwell CPU can provide around 30 GFlops compute power per core. Nvidia Kepler K40 and Maxwell GTX980m GPU can provide around 3 TFlops compute power.  
 
@@ -35,3 +35,9 @@ tbd. AlphaGo achieved 24.2% of accuracy and 2us of speed.
 
 ## MTCS
 tbd. Depends on Fast Rollout.
+
+# New updates from AlphaGo Zero
+## Dual Policy and Value network with ResNet  
+tbd. This will be completed soon. According to DeepMind, the new design will achieve better results for Supervised Learning.
+## Reinforced Learning pipline
+tbd. This will be different from AlphaGo Fan.
