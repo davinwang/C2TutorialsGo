@@ -18,7 +18,7 @@ This is a tutorial written for Caffe2 which mocks google AlphaGo Fan and AlphaGO
 | 5      | 0.002  | 1.6567 | 0.5312        | 15     |        |        | tbd           |
 | 6      | 0.002  | 1.6376 | 0.5340        | 16     |        |        | tbd           |
 | 7      | 0.001  | 1.6022 | 0.5398        | 17     |        |        | tbd           |
-| 8      | 0.0005 | redo   | redo          | 18     |        |        | tbd           |
+| 8      | 0.0005 | 1.5782 | 0.5455/0.5273 | 18     |        |        | tbd           |
 | 9      |        |        | tbd           | 19     |        |        | tbd           |
 | 10     |        |        | tbd           | 20     |        |        | 0.554(alphago)|
 
