@@ -4,14 +4,12 @@ def AddInput(model, batch_size, db, db_type):
     # Data is stored in INT8 while label is stored in INT32 and reward is stored in FLOAT
     # This will save disk storage
     data_int8, label_int32, reward_float = model.TensorProtosDBInput(
-        [], ['data_int8', 'label_uint16', 'reward_unit16'], batch_size=batch_size,
+        [], ['data_int8', 'label_int32', 'reward_float'], batch_size=batch_size,
         db=db, db_type=db_type)
     # cast data to float
     data = model.Cast(data_int8, 'data', to=core.DataType.FLOAT)
-    # flatten label(next move) to 1d vec
-    label = model.FlattenToVec(label_int32, 'label')
-    # flatten reward(game result) to 1d vec
-    reward = model.FlattenToVec(reward_float, 'reward')
+    label = model.Cast(label_int32, 'label', to=core.DataType.INT32)
+    reward = model.Cast(reward_float, 'reward', to=core.DataType.FLOAT)
     # don't need the gradient for the backward pass
     data = model.StopGradient(data, data)
     label = model.StopGradient(label, label)
