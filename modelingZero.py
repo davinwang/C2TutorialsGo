@@ -53,19 +53,20 @@ def AddResNetModel(model, data, num_blocks=19, filters=256, dim_in=17):
     value = model.FlattenToVec(vh_tanh, 'value')
     return policy, value
 
-def AddAccuracy(model, predict, predict_label, value, value_label):
+def AddAccuracy(model, predict, predict_label):
     """Adds an accuracy op to the model"""
     accuracy = brew.accuracy(model, [predict, predict_label], "accuracy")
-    return accuracy1, accuracy2
+    return accuracy
 
 def AddTrainingOperators(model, predict, predict_label, value, value_label, base_lr=-0.003):
     """Adds training operators to the model."""
     xent = model.LabelCrossEntropy([predict, predict_label], 'xent')
     # compute the expected loss
     loss1 = model.AveragedLoss(xent, "loss1")
-    loss2 = model.Sub([value, value_label], "loss2")
+    loss2 = model.AveragedLoss(model.SquaredL2Distance([value, value_label], None), 'loss2')
+    loss = model.Add([loss1, loss2], 'loss')
     # track the accuracy of the model
-    AddAccuracy(model, predict, predict_label, value, value_label)
+    AddAccuracy(model, predict, predict_label)
     # use the average loss we just computed to add gradient operators to the model
     model.AddGradientOperators([loss1, loss2])
     # do a simple stochastic gradient descent
