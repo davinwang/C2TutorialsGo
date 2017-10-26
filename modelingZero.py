@@ -17,7 +17,7 @@ def AddInput(model, batch_size, db, db_type):
     return data, label, reward
     
 def AddResNetModel(model, data, num_blocks=19, filters=256, dim_in=17):
-    # Layer 1: 17 x 19 x 19 -conv-> 256 x 19 x 19
+    # Layer 1: 17 x 19 x 19 -pad-> 17 x 21 x 21 -conv-> 256 x 19 x 19
     pad1 = model.PadImage(data, 'pad1', pad_t=1, pad_l=1, pad_b=1, pad_r=1, mode="constant", value=0.)
     conv1 = brew.conv(model, pad1, 'conv1', dim_in=dim_in, dim_out=filters, kernel=3)
     norm1 = model.Normalize(conv1, 'norm1')
@@ -29,7 +29,7 @@ def AddResNetModel(model, data, num_blocks=19, filters=256, dim_in=17):
         norm1 = model.Normalize(conv1, 'res/{}/norm1'.format(i))
         relu1 = brew.relu(model, norm1, 'res/{}/relu1'.format(i))
         pad2 = model.PadImage(relu1, 'res/{}/pad2'.format(i), pad_t=1, pad_l=1, pad_b=1, pad_r=1, mode="constant", value=0.)
-        conv2 = brew.conv(model, relu1, 'res/{}/conv2'.format(i), dim_in=filters, dim_out=filters, kernel=3)
+        conv2 = brew.conv(model, pad2, 'res/{}/conv2'.format(i), dim_in=filters, dim_out=filters, kernel=3)
         norm2 = model.Normalize(conv2, 'res/{}/norm2'.format(i))
         res = model.Add([norm2, input], 'res/{}/res'.format(i))
         output = brew.relu(model, res, 'res/{}/relu2'.format(i))
@@ -49,22 +49,23 @@ def AddResNetModel(model, data, num_blocks=19, filters=256, dim_in=17):
     vh_fc1 = brew.fc(model, vh_relu1, 'vh/fc1', dim_in=1*19*19, dim_out=filters*19*19)
     vh_relu2 = brew.relu(model, vh_fc1, 'vh/relu2')
     vh_fc2 = brew.fc(model, vh_relu2, 'vh/fc2', dim_in=filters*19*19, dim_out=1)
-    value = brew.tanh(model, vh_fc2, 'value')
+    vh_tanh = brew.tanh(model, vh_fc2, 'vh/tanh')
+    value = model.FlattenToVec(vh_tanh, 'value')
     return policy, value
 
-def AddAccuracy(model, predict, label):
+def AddAccuracy(model, predict, predict_label, value, value_label):
     """Adds an accuracy op to the model"""
-    accuracy = brew.accuracy(model, [predict, label], "accuracy")
-    return accuracy
+    accuracy = brew.accuracy(model, [predict, predict_label], "accuracy")
+    return accuracy1, accuracy2
 
-def AddTrainingOperators(model, predict, label, value, value_label, base_lr=-0.003):
+def AddTrainingOperators(model, predict, predict_label, value, value_label, base_lr=-0.003):
     """Adds training operators to the model."""
-    xent = model.LabelCrossEntropy([predict, label], 'xent')
+    xent = model.LabelCrossEntropy([predict, predict_label], 'xent')
     # compute the expected loss
     loss1 = model.AveragedLoss(xent, "loss1")
     loss2 = model.Sub([value, value_label], "loss2")
     # track the accuracy of the model
-    AddAccuracy(model, predict, label)
+    AddAccuracy(model, predict, predict_label, value, value_label)
     # use the average loss we just computed to add gradient operators to the model
     model.AddGradientOperators([loss1, loss2])
     # do a simple stochastic gradient descent
@@ -93,3 +94,4 @@ def AddBookkeepingOperators(model):
     model.Print('accuracy', [], to_file=1)
     model.Print('loss1', [], to_file=1)
     model.Print('loss2', [], to_file=1)
+    model.Print('loss', [], to_file=1)
