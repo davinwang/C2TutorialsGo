@@ -1,13 +1,16 @@
 # C2TutorialsGo
 This is a tutorial written for Caffe2 which mocks google AlphaGo Fan and AlphaGO Zero.
 
+## Installation
+  This program by so far relies on [RocAlphaGo](https://github.com/Rochester-NRT/RocAlphaGo) Cython implementation for feature preprocessing and Go rules. Cython compilation can be done by running shell command `python setup.py build_ext --inplace`.
+
 ## Preprocess
   The Go game dataset are usually stored in [SGF](http://www.red-bean.com/sgf/go.html) file format. We need to transform SGF file into Caffe2 Tensor which are 48 feature planes of 19x19 size, according to [DeepMind](http://www.nature.com/nature/journal/v529/n7587/full/nature16961.html?foxtrotcallback=true).  
     [The preprocess program](http://nbviewer.jupyter.org/github/davinwang/C2TutorialsGo/blob/master/Mock%20AlphaGo%20%281%29%20Preprocess%20Pipeline.ipynb) relies on `Cython` implementation of [RocAlphaGo](https://github.com/Rochester-NRT/RocAlphaGo) project for Go rules and feature plane generation. It is estimated to take 60 CPU hours for preprocess complete KGS data set.
 
 ## Supervised Learning - Policy Network
   According to [DeepMind](http://www.nature.com/nature/journal/v529/n7587/full/nature16961.html?foxtrotcallback=true), AlphaGo can achieve 55.4% test accuracy after 20 epochs training. Test set is the first 1 million steps. i.e. KGS2004. The speed of each prediction is 4.8ms (on Kepler K40 GPU).  
-  [This program](http://nbviewer.jupyter.org/github/davinwang/C2TutorialsGo/blob/master/Mock%20AlphaGo%20%282%29%20Policy%20Network.ipynb) achieves ~54.6% by ? epochs so far. Test set is the latest 1 million steps. i.e. KGS201705-201709. It also achieved speed of around 4.5ms for each single prediction (on Maxwell GTX980m GPU). Therefore each epochs takes ~40 GPU hours. Running on GPU mode is around 100x faster than CPU mode.  
+  [This program](http://nbviewer.jupyter.org/github/davinwang/C2TutorialsGo/blob/master/Mock%20AlphaGo%20%282%29%20Policy%20Network.ipynb) achieves ~54.6% by ? epochs so far. Test set is the latest 300 thousands / 1 million steps. i.e. KGS201705-KGS201706/KGS201709. It also achieved speed of around 4.5ms for each single prediction (on Maxwell GTX980m GPU). Therefore each epochs takes ~40 GPU hours. Running on GPU mode is around 100x faster than CPU mode.  
   
 | epochs | LR     | loss   | test accuracy | epochs | LR     | loss   | test accuracy |
 |--------|--------|--------|---------------|--------|--------|--------|---------------|
