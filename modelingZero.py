@@ -65,14 +65,15 @@ def AddTrainingOperators(model, predict, predict_label, value, value_label, base
     # ONE is a constant value that is used in the gradient update. We only need
     # to create it once, so it is explicitly placed in param_init_net.
     ONE = model.param_init_net.ConstantFill([], "ONE", shape=[1], value=1.0)
-    WEIGHT = model.param_init_net.ConstantFill([], "WEIGHT", shape=[1], value=1.0)
+    WEIGHT = model.param_init_net.ConstantFill([], "WEIGHT", shape=[1], value=0.0001)
     """Adds training operators to the model."""
     xent = model.LabelCrossEntropy([predict, predict_label], 'xent')
     # compute the expected loss
     loss1 = model.AveragedLoss(xent, "loss1")
     loss2_distance = model.SquaredL2Distance([value, value_label], 'loss2_distance')
     loss2 = model.AveragedLoss(loss2_distance, 'loss2')
-    loss = model.WeightedSum([loss1, WEIGHT, loss2, ONE], 'loss')
+    loss = model.Add([model.Mul([loss1, WEIGHT], 'loss1_scaled', broadcast=1), loss2], 'loss')
+    #loss = model.WeightedSum([loss1, WEIGHT, loss2, ONE], 'loss')
     if log:
         model.Print('loss1', [], to_file=1)
         model.Print('loss2', [], to_file=1)
@@ -80,7 +81,7 @@ def AddTrainingOperators(model, predict, predict_label, value, value_label, base
     # track the accuracy of the model
     AddAccuracy(model, predict, predict_label)
     # use the average loss we just computed to add gradient operators to the model
-    model.AddGradientOperators([loss1, loss2])
+    model.AddGradientOperators([loss])
     # do a simple stochastic gradient descent
     ITER = brew.iter(model, "iter")
     # set the learning rate schedule
