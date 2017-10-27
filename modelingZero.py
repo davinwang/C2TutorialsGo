@@ -41,7 +41,8 @@ def AddResNetModel(model, data, num_blocks=19, filters=256, dim_in=17):
     ph_conv1 = brew.conv(model, res_out, 'ph/conv1', dim_in=filters, dim_out=2, kernel=1)
     ph_norm1 = model.Normalize(ph_conv1, 'ph/norm1')
     ph_relu1 = brew.relu(model, ph_norm1, 'ph/relu1')
-    policy = brew.fc(model, ph_relu1, 'policy', dim_in=2*19*19, dim_out=362)
+    ph_fc = brew.fc(model, ph_relu1, 'ph/fc', dim_in=2*19*19, dim_out=362)
+    policy = brew.softmax(model, ph_fc, 'policy')
     # Value Head: 256 x 19 x 19 -conv-> 1 x 19 x 19 -> -normalize-> -relu-> -FC-> 256 x 19 x19 -relu-> -FC-> 1(scalar) -tanh->
     vh_conv1 = brew.conv(model, res_out, 'vh/conv1', dim_in=filters, dim_out=1, kernel=1)
     vh_norm1 = model.Normalize(vh_conv1, 'vh/norm1')
@@ -53,18 +54,29 @@ def AddResNetModel(model, data, num_blocks=19, filters=256, dim_in=17):
     value = model.FlattenToVec(vh_tanh, 'value')
     return policy, value
 
-def AddAccuracy(model, predict, predict_label):
+def AddAccuracy(model, predict, predict_label, log=True):
     """Adds an accuracy op to the model"""
     accuracy = brew.accuracy(model, [predict, predict_label], "accuracy")
+    if log:
+        model.Print('accuracy', [], to_file=1)
     return accuracy
 
-def AddTrainingOperators(model, predict, predict_label, value, value_label, base_lr=-0.003):
+def AddTrainingOperators(model, predict, predict_label, value, value_label, base_lr=-0.003, log=True):
+    # ONE is a constant value that is used in the gradient update. We only need
+    # to create it once, so it is explicitly placed in param_init_net.
+    ONE = model.param_init_net.ConstantFill([], "ONE", shape=[1], value=1.0)
+    WEIGHT = model.param_init_net.ConstantFill([], "WEIGHT", shape=[1], value=1.0)
     """Adds training operators to the model."""
     xent = model.LabelCrossEntropy([predict, predict_label], 'xent')
     # compute the expected loss
     loss1 = model.AveragedLoss(xent, "loss1")
-    loss2 = model.AveragedLoss(model.SquaredL2Distance([value, value_label], None), 'loss2')
-    loss = model.Add([loss1, loss2], 'loss')
+    loss2_distance = model.SquaredL2Distance([value, value_label], 'loss2_distance')
+    loss2 = model.AveragedLoss(loss2_distance, 'loss2')
+    loss = model.WeightedSum([loss1, WEIGHT, loss2, ONE], 'loss')
+    if log:
+        model.Print('loss1', [], to_file=1)
+        model.Print('loss2', [], to_file=1)
+        model.Print('loss', [], to_file=1)
     # track the accuracy of the model
     AddAccuracy(model, predict, predict_label)
     # use the average loss we just computed to add gradient operators to the model
@@ -73,9 +85,6 @@ def AddTrainingOperators(model, predict, predict_label, value, value_label, base
     ITER = brew.iter(model, "iter")
     # set the learning rate schedule
     LR = model.LearningRate(ITER, "LR", base_lr=base_lr, policy="fixed") # when policy=fixed, stepsize and gamma are ignored
-    # ONE is a constant value that is used in the gradient update. We only need
-    # to create it once, so it is explicitly placed in param_init_net.
-    ONE = model.param_init_net.ConstantFill([], "ONE", shape=[1], value=1.0)
     # Now, for each parameter, we do the gradient updates.
     for param in model.params:
         # Note how we get the gradient of each parameter - ModelHelper keeps
@@ -83,16 +92,3 @@ def AddTrainingOperators(model, predict, predict_label, value, value_label, base
         param_grad = model.param_to_grad[param]
         # The update is a simple weighted sum: param = param + param_grad * LR
         model.WeightedSum([param, ONE, param_grad, LR], param)
-
-def AddBookkeepingOperators(model):
-    """This adds a few bookkeeping operators that we can inspect later.
-    These operators do not affect the training procedure: they only collect
-    statistics and prints them to file or to logs.
-    """    
-    # Print basically prints out the content of the blob. to_file=1 routes the
-    # printed output to a file. The file is going to be stored under
-    #     root_folder/[blob name]
-    model.Print('accuracy', [], to_file=1)
-    model.Print('loss1', [], to_file=1)
-    model.Print('loss2', [], to_file=1)
-    model.Print('loss', [], to_file=1)
