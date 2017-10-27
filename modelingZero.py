@@ -63,7 +63,8 @@ def AddTrainingOperators(model, predict, predict_label, value, value_label, base
     xent = model.LabelCrossEntropy([predict, predict_label], 'xent')
     # compute the expected loss
     loss1 = model.AveragedLoss(xent, "loss1")
-    loss2 = model.AveragedLoss(model.SquaredL2Distance([value, value_label], None), 'loss2')
+    loss2_dist = model.SquaredL2Distance([value, value_label], 'loss2_dist')
+    loss2 = model.AveragedLoss(loss2_dist, 'loss2')
     loss = model.Add([loss1, loss2], 'loss')
     # track the accuracy of the model
     AddAccuracy(model, predict, predict_label)
