@@ -1,4 +1,5 @@
 ﻿from caffe2.python import core, model_helper, brew, utils
+from caffe2.proto import caffe2_pb2
 
 def AddInput(model, batch_size, db, db_type):
     # Data is stored in INT8 while label is stored in UINT16
@@ -12,7 +13,8 @@ def AddInput(model, batch_size, db, db_type):
     label_int32 = model.Cast(label_uint16, 'label_int32', to=core.DataType.INT32)
     label = model.FlattenToVec(label_int32, 'label')
     # encode onehot
-    BOARD_SIZE = model.param_init_net.ConstantFill([], 'BOARD_SIZE', shape=[1,], value=361) # constant
+    with core.DeviceScope(core.DeviceOption(caffe2_pb2.CPU, 0)):
+        BOARD_SIZE = model.param_init_net.ConstantFill([], 'BOARD_SIZE', shape=[1,], value=361) # constant
     label_int64 = model.Cast(label, 'label_int64', to=core.DataType.INT64)
     onehot = model.OneHot([label_int64, BOARD_SIZE], 'onehot') # shape=(mini_batch,361)
     # don't need the gradient for the backward pass
