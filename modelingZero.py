@@ -1,5 +1,6 @@
 ﻿from caffe2.python import core, model_helper, brew, utils
-
+from caffe2.proto import caffe2_pb2
+    
 def AddInput(model, batch_size, db, db_type):
     # Data is stored in INT8 while label is stored in INT32 and reward is stored in FLOAT
     # This will save disk storage
@@ -61,23 +62,24 @@ def AddAccuracy(model, predict, predict_label, log=True):
         model.Print('accuracy', [], to_file=1)
     return accuracy
 
-def AddTrainingOperators(model, predict, predict_label, value, value_label, base_lr=-0.003, log=True):
-    # ONE is a constant value that is used in the gradient update. We only need
-    # to create it once, so it is explicitly placed in param_init_net.
-    ONE = model.param_init_net.ConstantFill([], "ONE", shape=[1], value=1.0)
-    WEIGHT = model.param_init_net.ConstantFill([], "WEIGHT", shape=[1], value=0.0001)
+def AddTrainingOperators(model, predict, predict_label, expect_dist, value, value_label, base_lr=-0.003, log=True):
     """Adds training operators to the model."""
-    xent = model.LabelCrossEntropy([predict, predict_label], 'xent')
-    # compute the expected loss
+    # compute the expected loss:
+    # loss1 : prediction against label or distribution
+    if predict_label:
+        # encode onehot
+        with core.DeviceScope(core.DeviceOption(caffe2_pb2.CPU, 0)):
+            BOARD_SIZE = model.param_init_net.ConstantFill([], 'BOARD_SIZE', shape=[1,], value=362) # constant
+        label_int64 = model.Cast(predict_label, None, to=core.DataType.INT64)
+        onehot = model.OneHot([label_int64, BOARD_SIZE], None) # shape=(mini_batch,361)
+        # don't need the gradient for the backward pass
+        xent = model.SquaredL2Distance([predict, onehot], 'xent')
+    elif expect_dist:
+        xent = model.SquaredL2Distance([predict, expect_dist], 'xent')
     loss1 = model.AveragedLoss(xent, "loss1")
-    loss2_distance = model.SquaredL2Distance([value, value_label], 'loss2_distance')
-    loss2 = model.AveragedLoss(loss2_distance, 'loss2')
-    loss = model.Add([model.Mul([loss1, WEIGHT], 'loss1_scaled', broadcast=1), loss2], 'loss')
-    #loss = model.WeightedSum([loss1, WEIGHT, loss2, ONE], 'loss')
-    if log:
-        model.Print('loss1', [], to_file=1)
-        model.Print('loss2', [], to_file=1)
-        model.Print('loss', [], to_file=1)
+    loss2 = model.AveragedLoss(model.SquaredL2Distance([value, value_label], None), 'loss2')
+    loss = model.Add([loss1, loss2], 'loss')
+    loss = model.Scale(loss, loss, scale=0.5)
     # track the accuracy of the model
     AddAccuracy(model, predict, predict_label)
     # use the average loss we just computed to add gradient operators to the model
@@ -86,6 +88,9 @@ def AddTrainingOperators(model, predict, predict_label, value, value_label, base
     ITER = brew.iter(model, "iter")
     # set the learning rate schedule
     LR = model.LearningRate(ITER, "LR", base_lr=base_lr, policy="fixed") # when policy=fixed, stepsize and gamma are ignored
+    # ONE is a constant value that is used in the gradient update. We only need
+    # to create it once, so it is explicitly placed in param_init_net.
+    ONE = model.param_init_net.ConstantFill([], "ONE", shape=[1], value=1.0)
     # Now, for each parameter, we do the gradient updates.
     for param in model.params:
         # Note how we get the gradient of each parameter - ModelHelper keeps
@@ -93,3 +98,7 @@ def AddTrainingOperators(model, predict, predict_label, value, value_label, base
         param_grad = model.param_to_grad[param]
         # The update is a simple weighted sum: param = param + param_grad * LR
         model.WeightedSum([param, ONE, param_grad, LR], param)
+    if log:
+        model.Print('loss1', [], to_file=1)
+        model.Print('loss2', [], to_file=1)
+        model.Print('loss', [], to_file=1)

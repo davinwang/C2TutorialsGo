@@ -1,5 +1,6 @@
 # C2TutorialsGo
 This is a tutorial written for Caffe2 which mocks google AlphaGo Fan and AlphaGO Zero.
+v0.1.1 is the currently recommended version if you want stable result.
 
 ## Installation
   This program by so far relies on [RocAlphaGo](https://github.com/Rochester-NRT/RocAlphaGo) Cython implementation for feature preprocessing and Go rules. Cython compilation can be done by running shell command `python setup.py build_ext --inplace`.
