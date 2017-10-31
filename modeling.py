@@ -50,14 +50,18 @@ def AddAccuracy(model, predict, label, log=True):
         model.Print('accuracy', [], to_file=1)
     return accuracy
 
-def AddTrainingOperators(model, predict, expect, base_lr=-0.003, log=True):
+def AddTrainingOperators(model, predict, label, expect=None, base_lr=-0.003, log=True):
     """Adds training operators to the model.
         predict: Predicted distribution by Policy Model
+        label: 
         expect: Expected distribution by MCTS, or transformed from Policy Model
         base_lr: Base Learning Rate. Always fixed
     """
-    xent = model.SigmoidCrossEntropyWithLogits([predict, expect], 'xent')
-    #xent = model.SquaredL2Distance([predict, expect], 'xent')
+    if label:
+        xent = model.LabelCrossEntropy([predict, label], 'xent')
+    elif expect:
+        #xent = model.SigmoidCrossEntropyWithLogits([predict, expect], 'xent')
+        xent = model.SquaredL2Distance([predict, expect], 'xent')
     # compute the expected loss
     loss = model.AveragedLoss(xent, "loss")
     # use the average loss we just computed to add gradient operators to the model
