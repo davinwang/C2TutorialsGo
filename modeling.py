@@ -57,7 +57,7 @@ def AddOneHot(model, label):
     onehot = model.StopGradient(onehot, onehot)
     return onehot
 
-def AddTrainingOperators(model, predict, label, expect, base_lr=-0.003, log=True):
+def AddTrainingOperators(model, predict, label, expect, base_lr, log=True):
     """Adds training operators to the model.
         predict: Predicted distribution by Policy Model
         expect: Expected distribution by MCTS, or transformed from Policy Model
