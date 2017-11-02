@@ -108,6 +108,7 @@ def AddTrainingOperators(model, predict, label, expect, value, reward, base_lr, 
     #loss = model.Add([loss1, loss2], 'loss')
     # use the average loss we just computed to add gradient operators to the model
     model.AddGradientOperators([xent, loss2])
+    #model.AddGradientOperators([loss])
     # do a simple stochastic gradient descent
     ITER = brew.iter(model, "iter")
     # set the learning rate schedule
