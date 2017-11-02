@@ -1,6 +1,6 @@
 ﻿from caffe2.python import core, model_helper, brew, utils
 from caffe2.proto import caffe2_pb2
-    
+
 def AddInput(model, batch_size, db, db_type):
     # Data is stored in INT8 while label is stored in INT32 and reward is stored in FLOAT
     # This will save disk storage
@@ -16,7 +16,7 @@ def AddInput(model, batch_size, db, db_type):
     label = model.StopGradient(label, label)
     reward = model.StopGradient(reward, reward)
     return data, label, reward
-    
+
 def AddResNetModel(model, data, num_blocks=19, filters=256, dim_in=17):
     """
         params
@@ -103,13 +103,11 @@ def AddTrainingOperators(model, predict, label, expect, value, reward, base_lr, 
         AddAccuracy(model, softmax, label, log)
     else:
         softmax, xent = model.SoftmaxWithLoss([predict, expect], ['softmax', 'xent'], label_prob=1)
-    loss1 = model.AveragedLoss(xent, 'loss1')
-    loss2_l2 = model.SquaredL2Distance([value, reward], 'loss2_l2')
-    loss2 = model.AveragedLoss(loss2_l2, 'loss2')
-    loss = model.Add([loss1, loss2], 'loss')
-    loss = model.Scale(loss, loss, scale=0.5)
+    #loss1 = model.AveragedLoss(xent, 'loss1')
+    loss2 = model.AveragedLoss(model.SquaredL2Distance([value, reward], None), 'loss2')
+    #loss = model.Add([loss1, loss2], 'loss')
     # use the average loss we just computed to add gradient operators to the model
-    model.AddGradientOperators([loss])
+    model.AddGradientOperators([xent, loss2])
     # do a simple stochastic gradient descent
     ITER = brew.iter(model, "iter")
     # set the learning rate schedule
