@@ -7,14 +7,18 @@ v0.1.1 is the currently recommended version if you want stable result.
 
 # New updates from AlphaGo Zero
 ## Preprocess
-    The Go game dataset are usually stored in [SGF](http://www.red-bean.com/sgf/go.html) file format. We need to transform SGF file into Caffe2 Tensor. AlphaGo Zero requires 17 feature planes of 19x19 size, which does not include 'human knowledge' like Liberties or Escape.
+    The Go game dataset are usually stored in [SGF](http://www.red-bean.com/sgf/go.html) file format. We need to transform SGF file into Caffe2 Tensor. AlphaGo Zero requires 17 feature planes of 19x19 size, which does not include 'human knowledge' like Liberties or Escape.  
     [This preprocess program](http://nbviewer.jupyter.org/github/davinwang/C2TutorialsGo/blob/master/Mock%20AlphaGo%20Zero%20%281%29%20Preprocess%20Pipeline.ipynb) still relies on [RocAlphaGo](https://github.com/Rochester-NRT/RocAlphaGo) for Go rules, but no more dependencies for feature generation. I'm looking for a better(more accurate) Go rule implementation which can support Chinese/Korean/Japanese Go rules and different Komi, please feel free to recommend.
 
 ## Dual Policy and Value network with ResNet  
- Supervised Learning.
+    The Supervised Learning program is used to evaluate whether the network architecture is correct. It can now run in CPU mode, of course very slow, and meet gradient explosion in GPU mode, I'm trying to locate where the problem is. Welcome to raise pull requests.
 
 ## Reinforced Learning pipline
-tbd. This will be different from AlphaGo Fan.
+    On going. This will be different from AlphaGo Fan in may ways:
+    1. Always use the best primary player to generate data.
+    2. Before each move, do wide search to obtain better distribution than Policy predict.
+    3. MCTS only relies on Policy and Value network, no more Rollout.
+    4. more detail will be added during implementation
 
 # About AlphaGo Fan
 ## Preprocess
