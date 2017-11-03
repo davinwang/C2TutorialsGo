@@ -31,15 +31,15 @@ v0.1.1 is the currently recommended version if you want stable result.
   
 | epochs | LR     | loss   | test accuracy | epochs | LR     | loss   | test accuracy |
 |--------|--------|--------|---------------|--------|--------|--------|---------------|
-| 1      | 0.003  | 1.895  | 0.4800        | 11     |        |        | tbd           |
+| 1      | 0.003  | 1.895  | 0.4800/0.4724 | 11     |        |        | tbd           |
 | 2      | 0.003  | 1.7782 | 0.5118        | 12     |        |        | tbd           |
 | 3      | 0.002  | 1.7110 | 0.5227        | 13     |        |        | tbd           |
 | 4      | 0.002  | 1.6803 | 0.5275        | 14     |        |        | tbd           |
 | 5      | 0.002  | 1.6567 | 0.5312        | 15     |        |        | tbd           |
-| 6      | 0.002  | 1.6376 | 0.5340        | 16     |        |        | tbd           |
+| 6      | 0.002  | 1.6376 | 0.5340/0.5146 | 16     |        |        | tbd           |
 | 7      | 0.001  | 1.6022 | 0.5398        | 17     |        |        | tbd           |
 | 8      | 0.0005 | 1.5782 | 0.5455/0.5273 | 18     |        |        | tbd           |
-| 9      | 0.0005 |        | tbd           | 19     |        |        | tbd           |
+| 9      | 0.0005 | 1.6039 | 0.5450/0.5261 | 19     |        |        | tbd           |
 | 10     |        |        | tbd           | 20     |        |        | 0.554(alphago)|
 
 > At beginning, the test set is 300K steps. Later the test set has been enriched to 1M steps. The test will be rerun later and all test accuracy will be updated according to 1M baseline.
