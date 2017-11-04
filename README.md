@@ -12,6 +12,19 @@ v0.1.1 is the currently recommended version if you want stable result.
 
 ## Dual Policy and Value network with ResNet  
     The Supervised Learning program is used to evaluate whether the network architecture is correct. It can now run in CPU mode, of course very slow, and meet gradient explosion in GPU mode, I'm trying to locate where the problem is. Welcome to raise pull requests.
+    
+| epochs | LR     | loss   | train/test accu | epochs | LR     | loss   | train/test accu |
+|--------|--------|--------|-----------------|--------|--------|--------|-----------------|
+| 1      |        |        |        /        | 11     |        |        |        /        |
+| 2      |        |        |        /        | 12     |        |        |        /        |
+| 3      |        |        |        /        | 13     |        |        |        /        |
+| 4      |        |        |        /        | 14     |        |        |        /        |
+| 5      |        |        |        /        | 15     |        |        |        /        |
+| 6      |        |        |        /        | 16     |        |        |        /        |
+| 7      |        |        |        /        | 17     |        |        |        /        |
+| 8      |        |        |        /        | 18     |        |        |        /        |
+| 9*     |        |        |        /        | 19     |        |        |        /        |
+| 10     |        |        |        /        | 25*    |        |        | 0.60/0.57(alphago zero)|
 
 ## Reinforced Learning pipline
     On going. This will be different from AlphaGo Fan in may ways:
@@ -27,22 +40,21 @@ v0.1.1 is the currently recommended version if you want stable result.
 
 ## Supervised Learning - Policy Network
   According to [DeepMind](http://www.nature.com/nature/journal/v529/n7587/full/nature16961.html?foxtrotcallback=true), AlphaGo can achieve 55.4% test accuracy after 20 epochs training. Test set is the first 1 million steps. i.e. KGS2004. The speed of each prediction is 4.8ms (on Kepler K40 GPU).  
-  [This program](http://nbviewer.jupyter.org/github/davinwang/C2TutorialsGo/blob/master/Mock%20AlphaGo%20%282%29%20Policy%20Network.ipynb) achieves 54.55% / 52.73% by 8 epochs so far. Test set is the latest 300K / 1M steps. i.e. KGS201705~KGS201706 / KGS201705~KGS201709. It also achieved speed of around 4.5ms for each single prediction (on Maxwell GTX980m GPU). Therefore each epochs takes ~40 GPU hours. Running on GPU mode is around 100x faster than CPU mode.  
+  [This program](http://nbviewer.jupyter.org/github/davinwang/C2TutorialsGo/blob/master/Mock%20AlphaGo%20%282%29%20Policy%20Network.ipynb) achieves 54.55% / 52.73% by 8 epochs so far. Test set is the latest 1M steps. i.e.KGS201705-KGS201709. It also achieved speed of around 4.5ms for each single prediction (on Maxwell GTX980m GPU). Therefore each epochs takes ~40 GPU hours. Running on GPU mode is around 100x faster than CPU mode.  
   
-| epochs | LR     | loss   | test accuracy | epochs | LR     | loss   | test accuracy |
-|--------|--------|--------|---------------|--------|--------|--------|---------------|
-| 1      | 0.003  | 1.895  | 0.4800        | 11     |        |        | tbd           |
-| 2      | 0.003  | 1.7782 | 0.5118        | 12     |        |        | tbd           |
-| 3      | 0.002  | 1.7110 | 0.5227        | 13     |        |        | tbd           |
-| 4      | 0.002  | 1.6803 | 0.5275        | 14     |        |        | tbd           |
-| 5      | 0.002  | 1.6567 | 0.5312        | 15     |        |        | tbd           |
-| 6      | 0.002  | 1.6376 | 0.5340        | 16     |        |        | tbd           |
-| 7      | 0.001  | 1.6022 | 0.5398        | 17     |        |        | tbd           |
-| 8      | 0.0005 | 1.5782 | 0.5455/0.5273 | 18     |        |        | tbd           |
-| 9      | 0.0005 |        | tbd           | 19     |        |        | tbd           |
-| 10     |        |        | tbd           | 20     |        |        | 0.554(alphago)|
+| epochs | LR     | loss   | train/test accu | epochs | LR     | loss   | train/test accu |
+|--------|--------|--------|-----------------|--------|--------|--------|-----------------|
+| 1      | 0.003  | 1.895  | 0.4800 / 0.4724 | 11     |        |        | tbd             |
+| 2      | 0.003  | 1.7782 | 0.5118 / 0.4912 | 12     |        |        | tbd             |
+| 3      | 0.002  | 1.7110 | 0.5227 / 0.5029 | 13     |        |        | tbd             |
+| 4      | 0.002  | 1.6803 | 0.5275 / 0.5079 | 14     |        |        | tbd             |
+| 5      | 0.002  | 1.6567 | 0.5312 / 0.5119 | 15     |        |        | tbd             |
+| 6      | 0.002  | 1.6376 | 0.5340 / 0.5146 | 16     |        |        | tbd             |
+| 7      | 0.001  | 1.6022 | 0.5398 / 0.5202 | 17     |        |        | tbd             |
+| 8      | 0.0005 | 1.5782 | 0.5455 / 0.5273 | 18     |        |        | tbd             |
+| 9      | 0.0005 | 1.6039 | 0.5450 / 0.5261 | 19     |        |        | tbd             |
+| 10     |        |        | tbd             | 20     |        |        | 0.569/0.554(alphago)|
 
-> At beginning, the test set is 300K steps. Later the test set has been enriched to 1M steps. The test will be rerun later and all test accuracy will be updated according to 1M baseline.
 > Intel Broadwell CPU can provide around 30 GFlops compute power per core. Nvidia Kepler K40 and Maxwell GTX980m GPU can provide around 3 TFlops compute power.  
 
 ## Reinforced Learning - Policy Network
