@@ -23,7 +23,7 @@ v0.1.1 is the currently recommended version if you want stable result.
 | 6      |        |        |        /        | 16     |        |        |        /        |
 | 7      |        |        |        /        | 17     |        |        |        /        |
 | 8      |        |        |        /        | 18     |        |        |        /        |
-| 9*     |        |        |        /        | 19     |        |        |        /        |
+| 9      |        |        |        /        | 19     |        |        |        /        |
 | 10     |        |        |        /        | 25*    |        |        | 0.60/0.57(alphago zero)|
 
 ## Reinforced Learning pipline
@@ -52,9 +52,10 @@ v0.1.1 is the currently recommended version if you want stable result.
 | 6      | 0.002  | 1.6376 | 0.5340 / 0.5146 | 16     |        |        | tbd             |
 | 7      | 0.001  | 1.6022 | 0.5398 / 0.5202 | 17     |        |        | tbd             |
 | 8      | 0.0005 | 1.5782 | 0.5455 / 0.5273 | 18     |        |        | tbd             |
-| 9      | 0.0005 | 1.6039 | 0.5450 / 0.5261 | 19     |        |        | tbd             |
+| 9*     | 0.0005 | 1.6039 | 0.5450 / 0.5261 | 19     |        |        | tbd             |
 | 10     |        |        | tbd             | 20     |        |        | 0.569/0.554(alphago)|
 
+> epoch 9 may be skipped, the LR does not fit.
 > Intel Broadwell CPU can provide around 30 GFlops compute power per core. Nvidia Kepler K40 and Maxwell GTX980m GPU can provide around 3 TFlops compute power.  
 
 ## Reinforced Learning - Policy Network
