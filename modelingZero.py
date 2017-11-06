@@ -104,11 +104,11 @@ def AddTrainingOperators(model, predict, label, expect, value, reward, base_lr, 
     else:
         softmax, xent = model.SoftmaxWithLoss([predict, expect], ['softmax', 'xent'], label_prob=1)
     #loss1 = model.AveragedLoss(xent, 'loss1')
-    loss2 = model.AveragedLoss(model.SquaredL2Distance([value, reward], None), 'loss2')
-    #loss = model.Add([loss1, loss2], 'loss')
+    msqrl2 = model.AveragedLoss(model.SquaredL2Distance([value, reward], None), 'msqrl2')
+    loss = model.Add([xent, msqrl2], 'loss')
     # use the average loss we just computed to add gradient operators to the model
-    model.AddGradientOperators([xent, loss2])
-    #model.AddGradientOperators([loss])
+    #model.AddGradientOperators([xent, loss2])
+    model.AddGradientOperators([loss])
     # do a simple stochastic gradient descent
     ITER = brew.iter(model, "iter")
     # set the learning rate schedule
@@ -125,5 +125,5 @@ def AddTrainingOperators(model, predict, label, expect, value, reward, base_lr, 
         model.WeightedSum([param, ONE, param_grad, LR], param)
     if log:
         model.Print('loss', [], to_file=1)
-        model.Print('loss1', [], to_file=1)
-        model.Print('loss2', [], to_file=1)
+        model.Print('xent', [], to_file=1)
+        model.Print('msqrl2', [], to_file=1)
