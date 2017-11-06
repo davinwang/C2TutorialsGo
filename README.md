@@ -53,7 +53,7 @@ v0.1.1 is the currently recommended version if you want stable result.
 | 7      | 0.001  | 1.6022 | 0.5377 / 0.5202 | 17     |        |        |        /        |
 | 8      | 0.0005 | 1.5782 |    -   / 0.5273 | 18     |        |        |        /        |
 | 9      | 0.0005 | 1.6039 | 0.5450 / 0.5261 | 19     |        |        |        /        |
-| 10     | 0.0002 | 1.5942 | 0.5409 / 0.5281 | 20     |        |        | 0.569/0.554(alphago)|
+| 10     | 0.0002 | 1.5697 | 0.5447 / 0.5281 | 20     |        |        | 0.569/0.554(alphago)|
 
 > The training accuracy record of epoch 5/8 were lost.  
 > Intel Broadwell CPU can provide around 30 GFlops compute power per core. Nvidia Kepler K40 and Maxwell GTX980m GPU can provide around 3 TFlops compute power.  
