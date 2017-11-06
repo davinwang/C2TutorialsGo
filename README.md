@@ -11,7 +11,7 @@ v0.1.1 is the currently recommended version if you want stable result.
     [This preprocess program](http://nbviewer.jupyter.org/github/davinwang/C2TutorialsGo/blob/master/Mock%20AlphaGo%20Zero%20%281%29%20Preprocess%20Pipeline.ipynb) still relies on [RocAlphaGo](https://github.com/Rochester-NRT/RocAlphaGo) for Go rules, but no more dependencies for feature generation. I'm looking for a better(more accurate) Go rule implementation which can support Chinese/Korean/Japanese Go rules and different Komi, please feel free to recommend.
 
 ## Dual Policy and Value network with ResNet  
-    The Supervised Learning program is used to evaluate whether the network architecture is correct. It can now run in CPU mode, of course very slow, and meet gradient explosion in GPU mode, I'm trying to locate where the problem is. Welcome to raise pull requests.
+    The Supervised Learning program is used to evaluate whether the network architecture is correct. It can now run in CPU mode, of course very slow, and meet gradient explosion in GPU mode, I'm trying to locate where the problem is. Welcome to raise pull requests.  
     
 | epochs | LR     | loss   | train/test accu | epochs | LR     | loss   | train/test accu |
 |--------|--------|--------|-----------------|--------|--------|--------|-----------------|
@@ -45,17 +45,17 @@ v0.1.1 is the currently recommended version if you want stable result.
 | epochs | LR     | loss   | train/test accu | epochs | LR     | loss   | train/test accu |
 |--------|--------|--------|-----------------|--------|--------|--------|-----------------|
 | 1      | 0.003  | 1.895  | 0.4800 / 0.4724 | 11     |        |        |        /        |
-| 2      | 0.003  | 1.7782 | 0.5118 / 0.4912 | 12     |        |        |        /        |
-| 3      | 0.002  | 1.7110 | 0.5227 / 0.5029 | 13     |        |        |        /        |
-| 4      | 0.002  | 1.6803 | 0.5275 / 0.5079 | 14     |        |        |        /        |
-| 5      | 0.002  | 1.6567 | 0.5312 / 0.5119 | 15     |        |        |        /        |
-| 6      | 0.002  | 1.6376 | 0.5340 / 0.5146 | 16     |        |        |        /        |
-| 7      | 0.001  | 1.6022 | 0.5398 / 0.5202 | 17     |        |        |        /        |
-| 8      | 0.0005 | 1.5782 | 0.5455 / 0.5273 | 18     |        |        |        /        |
+| 2      | 0.003  | 1.7782 | 0.5024 / 0.4912 | 12     |        |        |        /        |
+| 3      | 0.002  | 1.7110 | 0.5157 / 0.5029 | 13     |        |        |        /        |
+| 4      | 0.002  | 1.6803 | 0.5217 / 0.5079 | 14     |        |        |        /        |
+| 5      | 0.002  | 1.6567 |    -   / 0.5119 | 15     |        |        |        /        |
+| 6      | 0.002  | 1.6376 | 0.5302 / 0.5146 | 16     |        |        |        /        |
+| 7      | 0.001  | 1.6022 | 0.5377 / 0.5202 | 17     |        |        |        /        |
+| 8      | 0.0005 | 1.5782 |    -   / 0.5273 | 18     |        |        |        /        |
 | 9*     | 0.0005 | 1.6039 | 0.5450 / 0.5261 | 19     |        |        |        /        |
 | 10     | 0.0002 | 1.55?? | 0.54?? /        | 20     |        |        | 0.569/0.554(alphago)|
 
-> epoch 9 may be skipped, the LR does not fit.  
+> Epoch 9 may be skipped, the LR does not fit. The training accuracy record of epoch 5/8 were lost.  
 > Intel Broadwell CPU can provide around 30 GFlops compute power per core. Nvidia Kepler K40 and Maxwell GTX980m GPU can provide around 3 TFlops compute power.  
 
 ## Reinforced Learning - Policy Network
