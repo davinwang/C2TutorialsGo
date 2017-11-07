@@ -37,11 +37,11 @@ def AddResNetModel(model, data, num_blocks=19, filters=256, dim_in=17, is_test=T
     def AddResBlock(model, input, i, filters, scope='res'):
         pad1 = model.PadImage(input, '{}/{}/pad1'.format(scope,i), pad_t=1, pad_l=1, pad_b=1, pad_r=1, mode="constant", value=0.)
         conv1 = brew.conv(model, pad1, '{}/{}/conv1'.format(scope,i), dim_in=filters, dim_out=filters, kernel=3)
-        norm1 = brew.spatial_bn(model, conv1, '{}/{}/norm1'.format(scope,i))
+        norm1 = brew.spatial_bn(model, conv1, '{}/{}/norm1'.format(scope,i), filters, is_test=is_test)
         relu1 = brew.relu(model, norm1, '{}/{}/relu1'.format(scope,i))
         pad2 = model.PadImage(relu1, '{}/{}/pad2'.format(scope,i), pad_t=1, pad_l=1, pad_b=1, pad_r=1, mode="constant", value=0.)
         conv2 = brew.conv(model, pad2, '{}/{}/conv2'.format(scope,i), dim_in=filters, dim_out=filters, kernel=3)
-        norm2 = brew.spatial_bn(model, conv2, '{}/{}/norm2'.format(scope,i))
+        norm2 = brew.spatial_bn(model, conv2, '{}/{}/norm2'.format(scope,i), filters, is_test=is_test)
         res = model.Add([norm2, input], '{}/{}/res'.format(scope,i))
         output = brew.relu(model, res, '{}/{}/relu2'.format(scope,i))
         return output
@@ -50,13 +50,13 @@ def AddResNetModel(model, data, num_blocks=19, filters=256, dim_in=17, is_test=T
         res_in = res_out
     # Policy Head: 256 x 19 x 19 -conv-> 2 x 19 x 19 -normalize-> -relu-> -FC-> 362
     ph_conv1 = brew.conv(model, res_out, 'ph/conv1', dim_in=filters, dim_out=2, kernel=1)
-    ph_norm1 = model.Normalize(ph_conv1, 'ph/norm1')
+    ph_norm1 = brew.spatial_bn(model, ph_conv1, 'ph/norm1', 2, is_test=is_test)
     ph_relu1 = brew.relu(model, ph_norm1, 'ph/relu1')
     ph_fc = brew.fc(model, ph_relu1, 'ph/fc', dim_in=2*19*19, dim_out=362)
     predict = model.Flatten(ph_fc, 'predict')
     # Value Head: 256 x 19 x 19 -conv-> 1 x 19 x 19 -> -normalize-> -relu-> -FC-> 256 x 19 x19 -relu-> -FC-> 1(scalar) -tanh->
     vh_conv1 = brew.conv(model, res_out, 'vh/conv1', dim_in=filters, dim_out=1, kernel=1)
-    vh_norm1 = model.Normalize(vh_conv1, 'vh/norm1')
+    vh_norm1 = brew.spatial_bn(model, vh_conv1, 'vh/norm1', 1, is_test=is_test)
     vh_relu1 = brew.relu(model, vh_norm1, 'vh/relu1')
     vh_fc1 = brew.fc(model, vh_relu1, 'vh/fc1', dim_in=1*19*19, dim_out=filters*19*19)
     vh_relu2 = brew.relu(model, vh_fc1, 'vh/relu2')
