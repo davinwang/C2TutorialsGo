@@ -17,7 +17,7 @@ def AddInput(model, batch_size, db, db_type):
     reward = model.StopGradient(reward, reward)
     return data, label, reward
 
-def AddResNetModel(model, data, num_blocks=19, filters=256, dim_in=17):
+def AddResNetModel(model, data, num_blocks=19, filters=256, dim_in=17, is_test=True):
     """
         params
             data: Data Input in shape of NCHW.
@@ -28,25 +28,20 @@ def AddResNetModel(model, data, num_blocks=19, filters=256, dim_in=17):
             predict: unscaled prediction, need Softmax to translate to probabilities
             value: scaled value [-1,1]
     """
-    def AddBatchNormalization(model, input, scope):
-        norm_3d, _ = model.Reshape(input, ['{}/3d'.format(scope), '{}/3d/_s'.format(scope)], shape=(0, 0, 19*19))
-        norm = model.Normalize(norm_3d, '{}/normalized'.format(scope))
-        norm_4d, _ = model.Reshape(norm, ['{}/4d'.format(scope), '{}/4d/_s'.format(scope)], shape=(0, 0, 19, 19))
-        return norm_4d
     # Layer 1: 17 x 19 x 19 -pad-> 17 x 21 x 21 -conv-> 256 x 19 x 19
     pad1 = model.PadImage(data, 'pad1', pad_t=1, pad_l=1, pad_b=1, pad_r=1, mode="constant", value=0.)
     conv1 = brew.conv(model, pad1, 'conv1', dim_in=dim_in, dim_out=filters, kernel=3)
-    norm1 = AddBatchNormalization(model, conv1, 'norm1')
+    norm1 = brew.spatial_bn(model, conv1, 'norm1', filters, is_test=is_test)
     res_in = brew.relu(model, norm1, 'relu1')
     # Blocks: 256 x 19 x 19 -conv-> -normalize-> -relu-> -conv-> -normalize-> +INPUT -relu-> 256 x 19 x 19
     def AddResBlock(model, input, i, filters, scope='res'):
         pad1 = model.PadImage(input, '{}/{}/pad1'.format(scope,i), pad_t=1, pad_l=1, pad_b=1, pad_r=1, mode="constant", value=0.)
         conv1 = brew.conv(model, pad1, '{}/{}/conv1'.format(scope,i), dim_in=filters, dim_out=filters, kernel=3)
-        norm1 = AddBatchNormalization(model, conv1, '{}/{}/norm1'.format(scope,i))
+        norm1 = brew.spatial_bn(model, conv1, '{}/{}/norm1'.format(scope,i))
         relu1 = brew.relu(model, norm1, '{}/{}/relu1'.format(scope,i))
         pad2 = model.PadImage(relu1, '{}/{}/pad2'.format(scope,i), pad_t=1, pad_l=1, pad_b=1, pad_r=1, mode="constant", value=0.)
         conv2 = brew.conv(model, pad2, '{}/{}/conv2'.format(scope,i), dim_in=filters, dim_out=filters, kernel=3)
-        norm2 = AddBatchNormalization(model, conv2, '{}/{}/norm2'.format(scope,i))
+        norm2 = brew.spatial_bn(model, conv2, '{}/{}/norm2'.format(scope,i))
         res = model.Add([norm2, input], '{}/{}/res'.format(scope,i))
         output = brew.relu(model, res, '{}/{}/relu2'.format(scope,i))
         return output
