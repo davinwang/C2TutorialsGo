@@ -28,22 +28,27 @@ def AddResNetModel(model, data, num_blocks=19, filters=256, dim_in=17):
             predict: unscaled prediction, need Softmax to translate to probabilities
             value: scaled value [-1,1]
     """
+    def AddBatchNormalization(model, input, scope):
+        norm_3d, _ = model.Reshape(input, ['{}/3d'.format(scope), '{}/3d/_s'.format(scope)], shape=(0, 0, 19*19))
+        norm = model.Normalize(norm_3d, '{}/normalized'.format(scope))
+        norm_4d, _ = model.Reshape(norm, ['{}/4d'.format(scope), '{}/4d/_s'.format(scope)], shape=(0, 0, 19, 19))
+        return norm_4d
     # Layer 1: 17 x 19 x 19 -pad-> 17 x 21 x 21 -conv-> 256 x 19 x 19
     pad1 = model.PadImage(data, 'pad1', pad_t=1, pad_l=1, pad_b=1, pad_r=1, mode="constant", value=0.)
     conv1 = brew.conv(model, pad1, 'conv1', dim_in=dim_in, dim_out=filters, kernel=3)
-    norm1 = model.Normalize(conv1, 'norm1')
+    norm1 = AddBatchNormalization(model, conv1, 'norm1')
     res_in = brew.relu(model, norm1, 'relu1')
     # Blocks: 256 x 19 x 19 -conv-> -normalize-> -relu-> -conv-> -normalize-> +INPUT -relu-> 256 x 19 x 19
     def AddResBlock(model, input, i, filters, scope='res'):
-        pad1 = model.PadImage(input, 'res/{}/pad1'.format(i), pad_t=1, pad_l=1, pad_b=1, pad_r=1, mode="constant", value=0.)
-        conv1 = brew.conv(model, pad1, 'res/{}/conv1'.format(i), dim_in=filters, dim_out=filters, kernel=3)
-        norm1 = model.Normalize(conv1, 'res/{}/norm1'.format(i))
-        relu1 = brew.relu(model, norm1, 'res/{}/relu1'.format(i))
-        pad2 = model.PadImage(relu1, 'res/{}/pad2'.format(i), pad_t=1, pad_l=1, pad_b=1, pad_r=1, mode="constant", value=0.)
-        conv2 = brew.conv(model, pad2, 'res/{}/conv2'.format(i), dim_in=filters, dim_out=filters, kernel=3)
-        norm2 = model.Normalize(conv2, 'res/{}/norm2'.format(i))
-        res = model.Add([norm2, input], 'res/{}/res'.format(i))
-        output = brew.relu(model, res, 'res/{}/relu2'.format(i))
+        pad1 = model.PadImage(input, '{}/{}/pad1'.format(scope,i), pad_t=1, pad_l=1, pad_b=1, pad_r=1, mode="constant", value=0.)
+        conv1 = brew.conv(model, pad1, '{}/{}/conv1'.format(scope,i), dim_in=filters, dim_out=filters, kernel=3)
+        norm1 = AddBatchNormalization(model, conv1, '{}/{}/norm1'.format(scope,i))
+        relu1 = brew.relu(model, norm1, '{}/{}/relu1'.format(scope,i))
+        pad2 = model.PadImage(relu1, '{}/{}/pad2'.format(scope,i), pad_t=1, pad_l=1, pad_b=1, pad_r=1, mode="constant", value=0.)
+        conv2 = brew.conv(model, pad2, '{}/{}/conv2'.format(scope,i), dim_in=filters, dim_out=filters, kernel=3)
+        norm2 = AddBatchNormalization(model, conv2, '{}/{}/norm2'.format(scope,i))
+        res = model.Add([norm2, input], '{}/{}/res'.format(scope,i))
+        output = brew.relu(model, res, '{}/{}/relu2'.format(scope,i))
         return output
     for i in range(num_blocks):
         res_out = AddResBlock(model, res_in, i, filters)
