@@ -15,7 +15,7 @@ v0.1.1 is the currently recommended version if you want stable result.
     
 | epochs | LR     | loss   | train/test accu | epochs | LR     | loss   | train/test accu |
 |--------|--------|--------|-----------------|--------|--------|--------|-----------------|
-| 1      |        |        |        /        | 11     |        |        |        /        |
+| 0.1    | 0.1    | 1.5740 | 0.5442 /        | 11     |        |        |        /        |
 | 2      |        |        |        /        | 12     |        |        |        /        |
 | 3      |        |        |        /        | 13     |        |        |        /        |
 | 4      |        |        |        /        | 14     |        |        |        /        |
@@ -24,7 +24,7 @@ v0.1.1 is the currently recommended version if you want stable result.
 | 7      |        |        |        /        | 17     |        |        |        /        |
 | 8      |        |        |        /        | 18     |        |        |        /        |
 | 9      |        |        |        /        | 19     |        |        |        /        |
-| 10     |        |        |        /        | 25*    |        |        | 0.60/0.57(alphago zero)|
+| 10     |        |        |        /        | *      |        |        | 0.60/0.57(alphago zero)|
 
 ## Reinforced Learning pipline
     On going. This will be different from AlphaGo Fan in may ways:
