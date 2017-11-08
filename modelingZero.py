@@ -86,7 +86,8 @@ def AddOneHot(model, label):
     onehot = model.StopGradient(onehot, onehot)
     return onehot
 
-def AddTrainingOperators(model, predict, label, expect, value, reward, base_lr, log=True):
+def AddTrainingOperators(model, predict, label, expect, value, reward, 
+                         base_lr=-0.1, policy='fixed', stepsize=200000, gamma=0.1, log=True):
     """Adds training operators to the model.
         params
             predict: Predicted move by Policy Model, unscaled, in shape (N,362)
@@ -112,7 +113,7 @@ def AddTrainingOperators(model, predict, label, expect, value, reward, base_lr, 
     # do a simple stochastic gradient descent
     ITER = brew.iter(model, "iter")
     # set the learning rate schedule
-    LR = model.LearningRate(ITER, "LR", base_lr=base_lr, policy="fixed") # when policy=fixed, stepsize and gamma are ignored
+    LR = model.LearningRate(ITER, "LR", base_lr=base_lr, policy=policy, stepsize=stepsize, gamma=gamma)
     # ONE is a constant value that is used in the gradient update. We only need
     # to create it once, so it is explicitly placed in param_init_net.
     ONE = model.param_init_net.ConstantFill([], "ONE", shape=[1], value=1.0)
