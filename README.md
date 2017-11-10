@@ -1,6 +1,6 @@
 # C2TutorialsGo
 This is a tutorial written for Caffe2 which mocks google AlphaGo Fan and AlphaGO Zero.
-v0.1.1 is the currently recommended version if you want stable result.
+v0.2.0 is released, with ResNet based AlphaGo Zero model.
 
 ## Installation
   This program by so far relies on [RocAlphaGo](https://github.com/Rochester-NRT/RocAlphaGo) Cython implementation for feature preprocessing and Go rules. Cython compilation can be done by running shell command `python setup.py build_ext --inplace`.
@@ -11,15 +11,15 @@ v0.1.1 is the currently recommended version if you want stable result.
     [This preprocess program](http://nbviewer.jupyter.org/github/davinwang/C2TutorialsGo/blob/master/Mock%20AlphaGo%20Zero%20%281%29%20Preprocess%20Pipeline.ipynb) still relies on [RocAlphaGo](https://github.com/Rochester-NRT/RocAlphaGo) for Go rules, but no more dependencies for feature generation. I'm looking for a better(more accurate) Go rule implementation which can support Chinese/Korean/Japanese Go rules and different Komi, please feel free to recommend.
 
 ## Dual Policy and Value network with ResNet  
-    The Supervised Learning program is used to evaluate whether the network architecture is correct. It can now run in CPU mode, of course very slow, and meet gradient explosion in GPU mode, I'm trying to locate where the problem is. Welcome to raise pull requests.  
+    The Supervised Learning program is used to evaluate whether the network architecture is correct. It can now run in GPU mode.
     
 | epochs | LR     | loss   | train/test accu | epochs | LR     | loss   | train/test accu |
 |--------|--------|--------|-----------------|--------|--------|--------|-----------------|
-| 0.1    | 0.1    | 1.5740 | 0.5442 /        | 11     |        |        |        /        |
-| 2      |        |        |        /        | 12     |        |        |        /        |
-| 3      |        |        |        /        | 13     |        |        |        /        |
-| 4      |        |        |        /        | 14     |        |        |        /        |
-| 5      |        |        |        /        | 15     |        |        |        /        |
+| 0.2    | 0.1    | 1.0000 |    -   / 0.1698 | 11     |        |        |        /        |
+| 0.4    |        |        |        /        | 12     |        |        |        /        |
+| 0.6    |        |        |        /        | 13     |        |        |        /        |
+| 0.8    |        |        |        /        | 14     |        |        |        /        |
+| 1      |        |        |        /        | 15     |        |        |        /        |
 | 6      |        |        |        /        | 16     |        |        |        /        |
 | 7      |        |        |        /        | 17     |        |        |        /        |
 | 8      |        |        |        /        | 18     |        |        |        /        |
