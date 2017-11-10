@@ -86,7 +86,7 @@ def AddOneHot(model, label):
     onehot = model.StopGradient(onehot, onehot)
     return onehot
 
-def AddTrainingOperators(model, predict, label, expect, value, reward, 
+def AddTrainingOperators(model, predict, expect, value, reward, 
                          base_lr=-0.1, policy='fixed', stepsize=200000, gamma=0.1, log=True):
     """Adds training operators to the model.
         params
@@ -98,12 +98,7 @@ def AddTrainingOperators(model, predict, label, expect, value, reward,
             base_lr: Base Learning Rate. Policy is always fixed
             log: Whether to log the loss and accuracy in file, default True
     """
-    if label:
-        onehot = AddOneHot(model, label)
-        softmax, xent = model.SoftmaxWithLoss([predict, onehot], ['softmax', 'xent'], label_prob=1)
-        AddAccuracy(model, softmax, label, log)
-    else:
-        softmax, xent = model.SoftmaxWithLoss([predict, expect], ['softmax', 'xent'], label_prob=1)
+    _, xent = model.SoftmaxWithLoss([predict, expect], ['_', 'xent'], label_prob=1)
     #loss1 = model.AveragedLoss(xent, 'loss1')
     msqrl2 = model.AveragedLoss(model.SquaredL2Distance([value, reward], None), 'msqrl2')
     loss = model.Add([xent, msqrl2], 'loss')
