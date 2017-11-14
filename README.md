@@ -11,11 +11,11 @@ v0.2.0 is released, with ResNet based AlphaGo Zero model.
     [This preprocess program](http://nbviewer.jupyter.org/github/davinwang/C2TutorialsGo/blob/master/Mock%20AlphaGo%20Zero%20%281%29%20Preprocess%20Pipeline.ipynb) still relies on [RocAlphaGo](https://github.com/Rochester-NRT/RocAlphaGo) for Go rules, but no more dependencies for feature generation. I'm looking for a better(more accurate) Go rule implementation which can support Chinese/Korean/Japanese Go rules and different Komi, please feel free to recommend.
 
 ## Dual Policy and Value network with ResNet  
-    The Supervised Learning program is used to evaluate whether the network architecture is correct. It can now run in GPU mode.
+    The Supervised Learning program is used to evaluate whether the network architecture is correct. Due to a bug in Caffe2 spatial_BN op, the program cannot resume from previous run. Since each epoch requires 200~250 GPU hours, thus it's not viable to run it on personal computer. 
     
 | epochs | LR     | loss   | train/test accu | epochs | LR     | loss   | train/test accu |
 |--------|--------|--------|-----------------|--------|--------|--------|-----------------|
-| 0.2    | 0.1    | 1.0000 |    -   / 0.1698 | 11     |        |        |        /        |
+| 0.2    | 0.1    | -      |    -   / 0.1698 | 11     |        |        |        /        |
 | 0.4    |        |        |        /        | 12     |        |        |        /        |
 | 0.6    |        |        |        /        | 13     |        |        |        /        |
 | 0.8    |        |        |        /        | 14     |        |        |        /        |
@@ -40,11 +40,11 @@ v0.2.0 is released, with ResNet based AlphaGo Zero model.
 
 ## Supervised Learning - Policy Network
   According to [DeepMind](http://www.nature.com/nature/journal/v529/n7587/full/nature16961.html?foxtrotcallback=true), AlphaGo can achieve 55.4% test accuracy after 20 epochs training. Test set is the first 1 million steps. i.e. KGS2004. The speed of each prediction is 4.8ms (on Kepler K40 GPU).  
-  [This program](http://nbviewer.jupyter.org/github/davinwang/C2TutorialsGo/blob/master/Mock%20AlphaGo%20%282%29%20Policy%20Network.ipynb) achieves 52.73% by 8 epochs so far. Test set is the latest 1M steps. i.e.KGS201705-KGS201709. It also achieved speed of around 4.5ms for each single prediction (on Maxwell GTX980m GPU). Therefore each epochs takes ~40 GPU hours. Running on GPU mode is around 100x faster than CPU mode.  
+  [This program](http://nbviewer.jupyter.org/github/davinwang/C2TutorialsGo/blob/master/Mock%20AlphaGo%20%282%29%20Policy%20Network.ipynb) achieves 52.83% by 11 epochs so far. Test set is the latest 1M steps. i.e.KGS201705-KGS201709. It also achieved speed of around 4.5ms for each single prediction (on Maxwell GTX980m GPU). Therefore each epochs takes ~40 GPU hours. Running on GPU mode is around 100x faster than CPU mode.  
   
 | epochs | LR     | loss   | train/test accu | epochs | LR     | loss   | train/test accu |
 |--------|--------|--------|-----------------|--------|--------|--------|-----------------|
-| 1      | 0.003  | 1.895  | 0.4800 / 0.4724 | 11     |        |        |        /        |
+| 1      | 0.003  | 1.895  | 0.4800 / 0.4724 | 11     | 0.0002 | 1.5680 | 0.5416 / 0.5283 |
 | 2      | 0.003  | 1.7782 | 0.5024 / 0.4912 | 12     |        |        |        /        |
 | 3      | 0.002  | 1.7110 | 0.5157 / 0.5029 | 13     |        |        |        /        |
 | 4      | 0.002  | 1.6803 | 0.5217 / 0.5079 | 14     |        |        |        /        |
