@@ -1,4 +1,4 @@
-﻿from caffe2.python import core, model_helper, brew, utils
+﻿from caffe2.python import core, model_helper, brew, utils, workspace
 from caffe2.proto import caffe2_pb2
 
 def AddInput(model, batch_size, db, db_type):
@@ -128,3 +128,23 @@ def AddTrainingOperators(model, predict, label, expect, value, reward,
         model.Print('loss', [], to_file=1)
         model.Print('xent', [], to_file=1)
         model.Print('msqrl2', [], to_file=1)
+
+def LoadParams(load_from):
+    init_def = caffe2_pb2.NetDef()
+    with open(load_from, 'r') as f:
+        init_def.ParseFromString(f.read())
+        #init_def.device_option.CopyFrom(device_opts)
+        workspace.RunNetOnce(init_def.SerializeToString())
+
+def SaveParams(model, save_to) :
+    init_net = caffe2_pb2.NetDef()
+    for param in model.params:
+        blob = workspace.FetchBlob(param)
+        shape = blob.shape
+        op = core.CreateOperator("GivenTensorFill",
+                                 [],
+                                 [param],
+                                 arg=[utils.MakeArgument("shape", shape),utils.MakeArgument("values", blob)])
+        init_net.op.extend([op])
+    with open(save_to, 'wb') as f:
+        f.write(init_net.SerializeToString())
